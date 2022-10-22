@@ -117,15 +117,14 @@ const FriendsDetail = props => {
       if (state.isConnected) {
         props.doAddFriend({
           onSuccess: (isSuccess, data) => {
-            props.navigation.goBack();
             DeviceEventEmitter.emit('FriendAdded', '');
           },
         });
       } else {
-        props.navigation.goBack();
         DeviceEventEmitter.emit('FriendAdded', '');
       }
     });
+    props.navigation.goBack();
   };
   const openForm = () => {
     setButtonTitle('Done');

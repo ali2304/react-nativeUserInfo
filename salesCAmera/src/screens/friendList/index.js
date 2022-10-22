@@ -8,7 +8,7 @@
 
 import React, {useEffect, useState} from 'react';
 import {connect} from 'react-redux';
-import {getFriendsList} from './action';
+import {getFriendsList, doAddFriend} from './action';
 import {
   StyleSheet,
   FlatList,
@@ -35,7 +35,6 @@ const Friends = props => {
   useEffect(() => {
     // for Deelink Call back
     if (Platform.OS === 'android') {
-      //  Linking.addEventListener('url', this._handleOpenURL);
       Linking.getInitialURL().then(url => {
         navigate(url);
       });
@@ -56,7 +55,6 @@ const Friends = props => {
    * handleOpenURL handels the page navigation
    */
   const handleOpenURL = event => {
-    console.log('handleOpenURL ', event.url);
     navigate(event.url);
   };
 
@@ -65,7 +63,6 @@ const Friends = props => {
    * navigate funtionaly to formate the URL and put that URL to navigate
    */
   const navigate = url => {
-    console.log('navigate ', url);
     callAPI(false, url);
     // navigateTo('DeepLinkPage', url);
   };
@@ -86,7 +83,7 @@ const Friends = props => {
       setUserList(store.getState().FriendsReducer?.friendsList);
     });
     return () => {
-      subscrib();
+      subscrib.remove();
       unsubscribe();
     };
   }, []);
@@ -100,19 +97,18 @@ const Friends = props => {
           } else {
             manipulateUrl(props.FriendsReducer?.friendsList, url);
           }
-        } else {
-          props.getFriendsList({
-            onSuccess: (isSuccess, data) => {
-              if (isSuccess) {
-                if (isFromEffect) {
-                  setUserList(data);
-                } else {
-                  manipulateUrl(data, url);
-                }
-              }
-            },
-          });
         }
+        props.getFriendsList({
+          onSuccess: (isSuccess, data) => {
+            if (isSuccess) {
+              if (isFromEffect) {
+                setUserList(data);
+              } else {
+                manipulateUrl(data, url);
+              }
+            }
+          },
+        });
       } else {
         if (props.FriendsReducer?.friendsList?.length > 0) {
           if (isFromEffect) {
@@ -126,7 +122,6 @@ const Friends = props => {
   };
   const manipulateUrl = (data, url) => {
     const dataArray = data.filter(el => url.includes(el.Id));
-    console.log('manipulateUrl dataArray ', dataArray);
     if (dataArray?.length > 0) {
       navigateTo('FriendsDetail', dataArray[0]);
     }
@@ -141,7 +136,6 @@ const Friends = props => {
   }, [userList]);
 
   const navigateTo = (screen, data) => {
-    console.log('navigateTo ', {item: data});
     let isEdit = false;
     if (store.getState().FriendsReducer.addedFriendList.length > 0) {
       const addData = store
@@ -221,6 +215,7 @@ const mapStateToProps = state => {
 
 const mapDispatchToProps = {
   getFriendsList: getFriendsList,
+  doAddFriend: doAddFriend,
 };
 export default connect(mapStateToProps, mapDispatchToProps)(Friends);
 const styles = StyleSheet.create({
