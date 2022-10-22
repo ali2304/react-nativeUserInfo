@@ -35,7 +35,7 @@ function* doAddFriend(action) {
       payload: {onSuccess: action.payload.onSuccess},
     });
 
-    yield action.payload.onSuccess();
+    // yield action.payload.onSuccess();
   } catch (error) {
     // yield action.payload.onSuccess(false, error);
   }
